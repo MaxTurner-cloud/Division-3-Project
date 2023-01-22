@@ -1,0 +1,19 @@
+*/ Raspberry Pi code for serial communication asking for data and recieving 
+*/
+
+
+import serial
+
+if __name__ == '__main__':
+    ser = serial.Serial ('/dev/ttyACM1', 9600, timeout = 1)  #open serial port to arduino
+    ser.reset_input_buffer()                                 #reset anything that was left over
+
+while True:
+    number =ser.read()      #read data being sent in from arduino
+    if number != b'':
+        if int.from_bytes (number, byteorder = 'big') == 18: #recognize number 18 being sent in as ID
+            want_data = True  #set data want to true when ID is correct
+            print ("Data is being Requested")
+            print ("Data sent " + bool (want_data) + " to Arduino.")
+            ser.write (bool(want_data).encode ('utf-8'))
+
