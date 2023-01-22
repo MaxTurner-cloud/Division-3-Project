@@ -1,0 +1,49 @@
+import serial
+
+if __name__ == '__main__':
+    id1 = '/dev/ttyUSB0'
+    id2 = '/dev/ttyUSB1'
+    while True:
+        id = FigId()
+        ser = serial.Serial (id, 9600, timeout=1)
+        ser.reset_input_buffer()
+        while id1 == id:
+            Ad1()
+        while id2 == id:
+            Ad2()
+
+
+class FigId:
+    number = ser.read()
+    if number != b'':
+        if int.from_bytes (number, byteorder='big') == 18:
+            '/dev/ttyUSB0'
+        if int.from_bytes (number, byteorder='big') == 16:
+            '/dev/ttyUSB1'
+
+
+class Ad1:                          # for the first arduino / water sensor
+    while True:
+        line = ser.readline().decode('utf-8').rstrip()
+        if line != '':
+            lineInt = int(line)
+            lineScaled = lineInt / 5
+            print ("Amount of water being detected:")
+            print (int (lineScaled))
+            with open ('WaterPressure.txt', 'w') as f:
+                f.write (lineScaled)
+                f.write ('\n')
+
+
+class Ad2:                          # for groundwater content monitoring / other sensors
+    while True:
+        line = ser.readline().decode('utf-8').rstrip()
+        if line != '':
+            lineInt = int(line)
+            lineScaled = lineInt / 2
+            print ("Ground water being detected:")
+            print (int(lineScaled))
+            with open ('GroundWater.txt', 'w') as f:
+                f.write (lineScaled)
+                f.write ('\n')
+
